@@ -1,0 +1,13 @@
+{
+  "name": "spark-alliance-voting",
+  "version": "1.0.0",
+  "description": "Vercel serverless functions for Spark Alliance voting platform",
+  "main": "api/vote.js",
+  "scripts": {
+    "start": "vercel dev",
+    "build": "vercel build"
+  },
+  "dependencies": {
+    "firebase": "^10.8.0"
+  }
+}

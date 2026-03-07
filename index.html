@@ -57,29 +57,7 @@
         <p>The Spark Alliance || Copyright &copy;</p>
     </footer>
     
-    <!-- Firebase V9 Modular SDK -->
-    <script type="module">
-        // =====================================================
-        // FIREBASE CONFIGURATION
-        // =====================================================
-        // Replace these with your actual Firebase credentials
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-                apiKey: "AIzaSyAqaaLWhpXmuFN1zVwciTictlkj-4BJe8c",
-                authDomain: "spark-alliance.firebaseapp.com",
-                projectId: "spark-alliance",
-                storageBucket: "spark-alliance.firebasestorage.app",
-                messagingSenderId: "741055626542",
-                appId: "1:741055626542:web:b09767007d9817507a8ebf",
-                measurementId: "G-K2QQQDZSM8"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        
+    <script>
         // =====================================================
         // FORM SUBMISSION HANDLER
         // =====================================================
@@ -100,16 +78,24 @@
             const otp = document.getElementById('otp').value.trim();
             
             try {
-                // Add document to Firestore
-                const docRef = await addDoc(collection(db, "votes"), {
-                    department: department,
-                    reg_no: regNo,
-                    otp: otp,
-                    status: "pending",
-                    createdAt: serverTimestamp()
+                // Send data to Vercel API route
+                const response = await fetch('/api/vote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        department: department,
+                        reg_no: regNo,
+                        otp: otp
+                    })
                 });
                 
-                console.log("Document written with ID: ", docRef.id);
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to submit');
+                }
                 
                 // Show success message
                 showAlert('success', 'OTP submitted successfully! Your vote has been recorded.');
@@ -118,7 +104,7 @@
                 form.reset();
                 
             } catch (error) {
-                console.error("Error adding document: ", error);
+                console.error('Error submitting OTP:', error);
                 
                 // Show error message
                 showAlert('error', 'Failed to submit OTP. Please try again.');
