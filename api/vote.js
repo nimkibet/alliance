@@ -3,7 +3,7 @@
 
 // Firebase V9 Modular SDK
 const { initializeApp } = require('firebase/app');
-const { getFirestore, collection, addDoc, serverTimestamp } = require('firebase/firestore');
+const { getFirestore, collection, addDoc, serverTimestamp } = require('firebase/firestore/lite');
 
 // =====================================================
 // FIREBASE CONFIGURATION
