@@ -1,0 +1,131 @@
+body {
+    background-color: #2a0a4a;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+header {
+    padding: 20px 0;
+}
+
+.logo {
+    width: 100px;
+    height: auto;
+}
+
+h1 {
+    font-size: 2.5em;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.candidate-img {
+    width: 200px;
+    height: auto;
+    border-radius: 50%;
+    margin-top: 20px;
+    border: 4px solid #ffffff;
+}
+
+.slogan {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 15px;
+    color: #ffcc00;
+}
+
+.independent {
+    font-size: 1.2em;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+.change {
+    font-size: 2em;
+    font-weight: bold;
+    color: #ff5733;
+    margin-top: 20px;
+}
+
+.form-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.form-section h2 {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+}
+
+form input {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+form button {
+    background: #ffcc00;
+    color: #2a0a4a;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+form button:hover {
+    background: #ff9900;
+}
+
+.social-media {
+    margin-top: 30px;
+}
+
+.social-media a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: 0.3s;
+}
+
+.social-media a:hover {
+    color: #ffcc00;
+}
+
+.instagram-logo {
+    width: 40px;
+    height: auto;
+}
+
+footer{
+    padding: 20px;
+    margin-top: 20px;
+    color: #fff;
+    background-color: #2a0a4a;
+    text-align: center;
+}
