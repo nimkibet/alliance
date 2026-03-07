@@ -1,18 +1,28 @@
+/* =====================================================
+   BASE STYLES
+   ===================================================== */
 body {
     background-color: #2a0a4a;
     color: #ffffff;
     font-family: Arial, sans-serif;
     text-align: center;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
 }
 
 .container {
-    max-width: 800px;
+    max-width: 900px;
     margin: auto;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    min-height: calc(100vh - 100px);
 }
 
+/* =====================================================
+   HEADER STYLES
+   ===================================================== */
 header {
     padding: 20px 0;
 }
@@ -25,6 +35,7 @@ header {
 h1 {
     font-size: 2.5em;
     font-weight: bold;
+    margin: 10px 0;
 }
 
 h2 {
@@ -33,12 +44,11 @@ h2 {
     margin-top: 10px;
 }
 
-.candidate-img {
-    width: 200px;
-    height: auto;
-    border-radius: 50%;
-    margin-top: 20px;
-    border: 4px solid #ffffff;
+/* =====================================================
+   MAIN CONTENT STYLES
+   ===================================================== */
+.main-content {
+    padding: 20px 0;
 }
 
 .slogan {
@@ -61,25 +71,51 @@ h2 {
     margin-top: 20px;
 }
 
+/* =====================================================
+   FORM SECTION STYLES
+   ===================================================== */
 .form-section {
     margin-top: 30px;
-    padding: 20px;
+    padding: 30px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
 }
 
 .form-section h2 {
     font-size: 1.8em;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
-form input {
+.form-description {
+    color: #cccccc;
+    margin-bottom: 20px;
+    font-size: 1em;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+form input,
+form select {
     width: 80%;
-    padding: 10px;
-    margin: 10px 0;
+    max-width: 400px;
+    padding: 12px 15px;
+    margin: 5px 0;
     border: none;
     border-radius: 5px;
     font-size: 1em;
+    background-color: #ffffff;
+    color: #333333;
+}
+
+form input:focus,
+form select:focus {
+    outline: 2px solid #ffcc00;
+    outline-offset: 2px;
 }
 
 form button {
@@ -87,45 +123,287 @@ form button {
     color: #2a0a4a;
     font-size: 1.2em;
     font-weight: bold;
-    padding: 10px 20px;
+    padding: 12px 30px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: 0.3s;
+    margin: 10px 5px;
 }
 
 form button:hover {
     background: #ff9900;
 }
 
-.social-media {
+form button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+/* =====================================================
+   ALERT STYLES
+   ===================================================== */
+#alertContainer {
+    margin-top: 20px;
+    width: 80%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.alert {
+    padding: 15px 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.alert-success {
+    background-color: #28a745;
+    color: #ffffff;
+}
+
+.alert-error {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.alert-close:hover {
+    opacity: 0.8;
+}
+
+/* =====================================================
+   ADMIN LINK STYLES
+   ===================================================== */
+.admin-link {
+    margin-top: 20px;
+}
+
+.admin-link a {
+    color: #ffcc00;
+    text-decoration: none;
+    font-size: 1em;
+}
+
+.admin-link a:hover {
+    text-decoration: underline;
+}
+
+/* =====================================================
+   LOGIN PAGE STYLES
+   ===================================================== */
+.login-section {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.back-link {
+    margin-top: 20px;
+}
+
+.back-link a {
+    color: #ffcc00;
+    text-decoration: none;
+    font-size: 1em;
+}
+
+.back-link a:hover {
+    text-decoration: underline;
+}
+
+/* =====================================================
+   DASHBOARD STYLES
+   ===================================================== */
+.dashboard-container {
+    max-width: 1000px;
+}
+
+.user-info {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.user-info span {
+    font-size: 1em;
+}
+
+.logout-btn {
+    background: #dc3545;
+    color: #ffffff;
+    font-size: 0.9em;
+    padding: 8px 20px;
+}
+
+.logout-btn:hover {
+    background: #c82333;
+}
+
+.dashboard-content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
     margin-top: 30px;
 }
 
-.social-media a {
-    text-decoration: none;
+.dashboard-section {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    border-radius: 10px;
+}
+
+.dashboard-section h2 {
+    color: #ffcc00;
+    margin-bottom: 5px;
+}
+
+.section-description {
+    color: #cccccc;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+}
+
+/* =====================================================
+   TABLE STYLES
+   ===================================================== */
+.table-container {
+    overflow-x: auto;
+}
+
+.votes-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.votes-table th,
+.votes-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.votes-table th {
+    background: #1a0530;
+    color: #ffcc00;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.votes-table tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.votes-table tr:last-child td {
+    border-bottom: none;
+}
+
+.mark-voted-btn {
+    background: #28a745;
     color: #ffffff;
-    font-size: 1.5em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
     transition: 0.3s;
 }
 
-.social-media a:hover {
-    color: #ffcc00;
+.mark-voted-btn:hover {
+    background: #218838;
 }
 
-.instagram-logo {
-    width: 40px;
-    height: auto;
+.no-data-msg {
+    color: #cccccc;
+    font-style: italic;
+    padding: 20px;
+    display: none;
 }
 
-footer{
+/* Used row strikethrough */
+.used-row .strikethrough {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+/* =====================================================
+   FOOTER STYLES
+   ===================================================== */
+footer {
     padding: 20px;
     margin-top: 20px;
     color: #fff;
     background-color: #2a0a4a;
     text-align: center;
+}
+
+/* =====================================================
+   RESPONSIVE STYLES
+   ===================================================== */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    h1 {
+        font-size: 1.8em;
+    }
+    
+    h2 {
+        font-size: 1.4em;
+    }
+    
+    .slogan {
+        font-size: 1.2em;
+    }
+    
+    .change {
+        font-size: 1.5em;
+    }
+    
+    form input,
+    form select {
+        width: 90%;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .votes-table {
+        font-size: 0.9em;
+    }
+    
+    .votes-table th,
+    .votes-table td {
+        padding: 8px 10px;
+    }
 }

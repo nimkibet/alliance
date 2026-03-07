@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - THE SPARK ALLIANCE</title>
+    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="icon" href="Spark Alliance.jpeg" type="image/x-icon">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="IMG/Spark Alliance.jpeg" alt="SPARK ALLIANCE" class="logo">
+            <h1>ADMIN LOGIN</h1>
+            <h2>THE SPARK ALLIANCE FAMILY</h2>
+        </header>
+        
+        <section class="form-section login-section">
+            <h2>Department Admin Access</h2>
+            <p class="form-description">Sign in with your admin credentials</p>
+            
+            <form id="loginForm">
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                
+                <button type="submit" id="loginBtn">Login</button>
+            </form>
+            
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+            
+            <!-- Back to Home -->
+            <div class="back-link">
+                <a href="index.html">&larr; Back to Home</a>
+            </div>
+        </section>
+        
+    </div>
+
+    <footer>
+        <p>The Spark Alliance || Copyright &copy;</p>
+    </footer>
+    
+    <!-- Firebase V9 Modular SDK -->
+    <script type="module">
+        // =====================================================
+        // FIREBASE CONFIGURATION
+        // =====================================================
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+        const firebaseConfig = {
+                apiKey: "AIzaSyAqaaLWhpXmuFN1zVwciTictlkj-4BJe8c",
+                authDomain: "spark-alliance.firebaseapp.com",
+                projectId: "spark-alliance",
+                storageBucket: "spark-alliance.firebasestorage.app",
+                messagingSenderId: "741055626542",
+                appId: "1:741055626542:web:b09767007d9817507a8ebf",
+                measurementId: "G-K2QQQDZSM8"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        
+        // =====================================================
+        // CHECK IF USER IS ALREADY LOGGED IN
+        // =====================================================
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is already logged in, redirect to dashboard
+                window.location.href = 'dashboard.html';
+            }
+        });
+        
+        // =====================================================
+        // LOGIN FORM HANDLER
+        // =====================================================
+        const form = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const alertContainer = document.getElementById('alertContainer');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                console.log("Login successful:", user.email);
+                
+                // Redirect to dashboard
+                window.location.href = 'dashboard.html';
+                
+            } catch (error) {
+                console.error("Login error:", error);
+                
+                let errorMessage = 'Login failed. Please check your credentials.';
+                
+                if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address.';
+                } else if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'No user found with this email.';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'Incorrect password.';
+                } else if (error.code === 'auth/invalid-credential') {
+                    errorMessage = 'Invalid email or password.';
+                }
+                
+                showAlert('error', errorMessage);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
+        });
+        
+        // =====================================================
+        // ALERT FUNCTION
+        // =====================================================
+        function showAlert(type, message) {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            const alertHTML = `
+                <div class="alert ${alertClass}">
+                    ${message}
+                    <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                </div>
+            `;
+            
+            alertContainer.innerHTML = alertHTML;
+        }
+    </script>
+</body>
+</html>

