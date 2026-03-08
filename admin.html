@@ -290,7 +290,7 @@
         // =====================================================
         function loadVotes() {
             const votesRef = collection(db, "votes");
-            const votesQuery = query(votesRef, orderBy("created_at", "desc"));
+            const votesQuery = query(votesRef, orderBy("createdAt", "desc"));
             
             unsubscribe = onSnapshot(votesQuery, (snapshot) => {
                 const votes = [];
@@ -298,7 +298,14 @@
                     votes.push({ id: doc.id, ...doc.data() });
                 });
                 
+                // Debug: Log votes to console
+                console.log('Votes loaded:', votes.length);
+                console.log('Current department:', currentDepartment);
+                console.log('Sample vote:', votes[0]);
+                
                 displayVotes(votes);
+            }, (error) => {
+                console.error('Error loading votes:', error);
             });
         }
         
@@ -317,14 +324,41 @@
             let pendingCount = 0;
             let usedCount = 0;
             
+            // If a department is selected, only show that department's votes
+            const deptFilter = currentDepartment ? currentDepartment.toUpperCase() : null;
+            
             // Group votes by department
             votes.forEach((vote) => {
-                const dept = (vote.department || 'SPAS').toLowerCase();
-                const tbody = document.getElementById(`${dept}TableBody`);
+                // Get department - handle both uppercase and lowercase
+                const voteDept = (vote.department || '').toUpperCase();
+                
+                // If filtering by department, skip non-matching
+                if (deptFilter && voteDept !== deptFilter) {
+                    return;
+                }
+                
+                // Map department to table ID
+                let deptId = voteDept.toLowerCase();
+                if (deptId === 'HEALTH' || deptId === 'MEDICAL') deptId = 'health';
+                
+                const tbody = document.getElementById(`${deptId}TableBody`);
                 
                 if (tbody) {
                     const row = document.createElement('tr');
-                    const submittedAt = vote.created_at ? new Date(vote.created_at.seconds * 1000).toLocaleString() : 'N/A';
+                    
+                    // Handle Firestore timestamp - createdAt field
+                    let submittedAt = 'N/A';
+                    if (vote.createdAt) {
+                        if (vote.createdAt.toDate) {
+                            // Firestore Timestamp object
+                            submittedAt = vote.createdAt.toDate().toLocaleString();
+                        } else if (vote.createdAt.seconds) {
+                            // Plain object with seconds
+                            submittedAt = new Date(vote.createdAt.seconds * 1000).toLocaleString();
+                        } else if (typeof vote.createdAt === 'string') {
+                            submittedAt = new Date(vote.createdAt).toLocaleString();
+                        }
+                    }
                     
                     row.innerHTML = `
                         <td>${vote.reg_no || 'N/A'}</td>
