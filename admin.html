@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - THE SPARK ALLIANCE</title>
+    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="icon" href="Spark Alliance.jpeg" type="image/x-icon">
+</head>
+<body>
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-box">
+            <img src="IMG/Spark Alliance.jpeg" alt="SPARK ALLIANCE" class="logo-small">
+            <h2>ADMIN LOGIN</h2>
+            <p class="login-hint">Use format: admin@dept</p>
+            <p class="login-hint-small">Departments: @spas, @med, @edu, @bus, @eng</p>
+            <form id="loginForm">
+                <input type="text" id="username" name="username" placeholder="admin@spas" required>
+                <input type="password" id="password" name="password" placeholder="Enter password" required>
+                <button type="submit" id="loginBtn">Login</button>
+            </form>
+            <div id="loginError" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard (hidden until logged in) -->
+    <div id="dashboard" class="container dashboard-container" style="display: none;">
+        <header>
+            <img src="IMG/Spark Alliance.jpeg" alt="SPARK ALLIANCE" class="logo">
+            <h1>ADMIN DASHBOARD</h1>
+            <h2>THE SPARK ALLIANCE FAMILY</h2>
+        </header>
+        
+        <!-- User Info Bar -->
+        <div class="user-info">
+            <span id="userEmail">Admin Logged In</span>
+            <span id="userDepartment"></span>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+
+        <!-- Summary Cards -->
+        <section class="summary-section">
+            <div class="summary-card">
+                <h3>Total Votes</h3>
+                <p id="totalVotes" class="summary-number">0</p>
+            </div>
+            <div class="summary-card">
+                <h3>Pending</h3>
+                <p id="pendingCount" class="summary-number">0</p>
+            </div>
+            <div class="summary-card">
+                <h3>Used</h3>
+                <p id="usedCount" class="summary-number">0</p>
+            </div>
+        </section>
+        
+        <!-- Dashboard Content by Category -->
+        <section class="dashboard-content">
+            <!-- SPAS Section -->
+            <div class="dashboard-section">
+                <h2>SPAS Department</h2>
+                <div class="table-container">
+                    <table class="votes-table">
+                        <thead>
+                            <tr>
+                                <th>Reg No</th>
+                                <th>OTP</th>
+                                <th>Status</th>
+                                <th>Submitted At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="spasTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- EDU Section -->
+            <div class="dashboard-section">
+                <h2>EDU Department</h2>
+                <div class="table-container">
+                    <table class="votes-table">
+                        <thead>
+                            <tr>
+                                <th>Reg No</th>
+                                <th>OTP</th>
+                                <th>Status</th>
+                                <th>Submitted At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eduTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- BUS Section -->
+            <div class="dashboard-section">
+                <h2>BUS Department</h2>
+                <div class="table-container">
+                    <table class="votes-table">
+                        <thead>
+                            <tr>
+                                <th>Reg No</th>
+                                <th>OTP</th>
+                                <th>Status</th>
+                                <th>Submitted At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="busTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- ENG Section -->
+            <div class="dashboard-section">
+                <h2>ENG Department</h2>
+                <div class="table-container">
+                    <table class="votes-table">
+                        <thead>
+                            <tr>
+                                <th>Reg No</th>
+                                <th>OTP</th>
+                                <th>Status</th>
+                                <th>Submitted At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="engTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- HEALTH Section -->
+            <div class="dashboard-section">
+                <h2>HEALTH Department</h2>
+                <div class="table-container">
+                    <table class="votes-table">
+                        <thead>
+                            <tr>
+                                <th>Reg No</th>
+                                <th>OTP</th>
+                                <th>Status</th>
+                                <th>Submitted At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="healthTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+         
+        <!-- Back to Home -->
+        <div class="back-link">
+            <a href="index.html">&larr; Back to Home</a>
+        </div>
+    </div>
+    
+    <footer>
+        <p>The Spark Alliance || Copyright &copy;</p>
+    </footer>
+    
+    <!-- Firebase V9 Modular SDK -->
+    <script type="module">
+        // =====================================================
+        // FIREBASE CONFIGURATION
+        // =====================================================
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAqaaLWhpXmuFN1zVwciTictlkj-4BJe8c",
+            authDomain: "spark-alliance.firebaseapp.com",
+            projectId: "spark-alliance",
+            storageBucket: "spark-alliance.firebasestorage.app",
+            messagingSenderId: "741055626542",
+            appId: "1:741055626542:web:b09767007d9817507a8ebf",
+            measurementId: "G-K2QQQDZSM8"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Global variables
+        let unsubscribe = null;
+        let currentDepartment = null;
+        
+        // =====================================================
+        // LOGIN HANDLER
+        // =====================================================
+        const loginForm = document.getElementById('loginForm');
+        const loginOverlay = document.getElementById('loginOverlay');
+        const dashboard = document.getElementById('dashboard');
+        const loginError = document.getElementById('loginError');
+        
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Login successful - hide overlay, show dashboard
+                    loginOverlay.style.display = 'none';
+                    dashboard.style.display = 'block';
+                    // Store token and department
+                    localStorage.setItem('adminToken', data.token);
+                    localStorage.setItem('adminDepartment', data.department);
+                    localStorage.setItem('adminEmail', data.email);
+                    currentDepartment = data.department;
+                    // Update UI
+                    document.getElementById('userEmail').textContent = data.email;
+                    document.getElementById('userDepartment').textContent = `Department: ${data.department}`;
+                    // Show only the relevant department section
+                    showOnlyDepartment(data.department);
+                    // Load votes
+                    loadVotes();
+                } else {
+                    loginError.textContent = data.message || 'Invalid credentials';
+                }
+            } catch (error) {
+                loginError.textContent = 'Login failed. Please try again.';
+                console.error('Login error:', error);
+            }
+        });
+        
+        // =====================================================
+        // SHOW ONLY RELEVANT DEPARTMENT
+        // =====================================================
+        function showOnlyDepartment(dept) {
+            const sections = document.querySelectorAll('.dashboard-section');
+            sections.forEach(section => {
+                const title = section.querySelector('h2').textContent.toUpperCase();
+                if (title.includes(dept)) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+        
+        // =====================================================
+        // LOGOUT HANDLER
+        // =====================================================
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminDepartment');
+            localStorage.removeItem('adminEmail');
+            loginOverlay.style.display = 'flex';
+            dashboard.style.display = 'none';
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        });
+        
+        // =====================================================
+        // CHECK IF ALREADY LOGGED IN
+        // =====================================================
+        const token = localStorage.getItem('adminToken');
+        const savedDept = localStorage.getItem('adminDepartment');
+        const savedEmail = localStorage.getItem('adminEmail');
+        
+        if (token && savedDept) {
+            loginOverlay.style.display = 'none';
+            dashboard.style.display = 'block';
+            currentDepartment = savedDept;
+            document.getElementById('userEmail').textContent = savedEmail;
+            document.getElementById('userDepartment').textContent = `Department: ${savedDept}`;
+            showOnlyDepartment(savedDept);
+            loadVotes();
+        }
+        
+        // =====================================================
+        // REAL-TIME VOTES LISTENER
+        // =====================================================
+        function loadVotes() {
+            const votesRef = collection(db, "votes");
+            const votesQuery = query(votesRef, orderBy("created_at", "desc"));
+            
+            unsubscribe = onSnapshot(votesQuery, (snapshot) => {
+                const votes = [];
+                snapshot.forEach((doc) => {
+                    votes.push({ id: doc.id, ...doc.data() });
+                });
+                
+                displayVotes(votes);
+            });
+        }
+        
+        // =====================================================
+        // DISPLAY VOTES BY DEPARTMENT
+        // =====================================================
+        function displayVotes(votes) {
+            // Clear all tables
+            const departments = ['spas', 'edu', 'bus', 'eng', 'health'];
+            departments.forEach(dept => {
+                document.getElementById(`${dept}TableBody`).innerHTML = '';
+            });
+            
+            // Count totals
+            let totalVotes = votes.length;
+            let pendingCount = 0;
+            let usedCount = 0;
+            
+            // Group votes by department
+            votes.forEach((vote) => {
+                const dept = (vote.department || 'SPAS').toLowerCase();
+                const tbody = document.getElementById(`${dept}TableBody`);
+                
+                if (tbody) {
+                    const row = document.createElement('tr');
+                    const submittedAt = vote.created_at ? new Date(vote.created_at.seconds * 1000).toLocaleString() : 'N/A';
+                    
+                    row.innerHTML = `
+                        <td>${vote.reg_no || 'N/A'}</td>
+                        <td>${vote.otp || 'N/A'}</td>
+                        <td><span class="status-badge status-${vote.status || 'pending'}">${vote.status || 'pending'}</span></td>
+                        <td>${submittedAt}</td>
+                        <td>
+                            ${vote.status !== 'used' ? 
+                                `<button class="action-btn" onclick="markAsUsed('${vote.id}')">Mark as Voted</button>` : 
+                                '<span class="completed-text">Completed</span>'}
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
+                
+                // Count status
+                if (vote.status === 'used') {
+                    usedCount++;
+                } else {
+                    pendingCount++;
+                }
+            });
+            
+            // Update summary cards
+            document.getElementById('totalVotes').textContent = totalVotes;
+            document.getElementById('pendingCount').textContent = pendingCount;
+            document.getElementById('usedCount').textContent = usedCount;
+        }
+        
+        // =====================================================
+        // MARK AS USED FUNCTION
+        // =====================================================
+        window.markAsUsed = async function(voteId) {
+            try {
+                const voteRef = doc(db, "votes", voteId);
+                await updateDoc(voteRef, {
+                    status: 'used',
+                    updated_at: serverTimestamp()
+                });
+            } catch (error) {
+                console.error("Error updating vote:", error);
+                alert('Failed to update vote. Please try again.');
+            }
+        };
+    </script>
+</body>
+</html>

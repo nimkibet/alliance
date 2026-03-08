@@ -407,3 +407,156 @@ footer {
         padding: 8px 10px;
     }
 }
+
+/* =====================================================
+   SUMMARY CARDS
+   ===================================================== */
+.summary-section {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+    gap: 15px;
+}
+
+.summary-card {
+    background: linear-gradient(135deg, #4a1a8a, #6b2fb3);
+    padding: 20px 30px;
+    border-radius: 10px;
+    min-width: 120px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.summary-card h3 {
+    margin: 0;
+    font-size: 1em;
+    color: #ffd700;
+}
+
+.summary-number {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin: 10px 0 0 0;
+}
+
+/* =====================================================
+   LOGIN OVERLAY
+   ===================================================== */
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2a0a4a, #4a1a8a);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.login-box {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+    text-align: center;
+    max-width: 350px;
+    width: 90%;
+}
+
+.logo-small {
+    width: 80px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.login-box h2 {
+    color: #ffd700;
+    margin-bottom: 10px;
+}
+
+.login-hint {
+    color: #ffd700;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.login-hint-small {
+    color: #cccccc;
+    font-size: 0.75em;
+    margin-bottom: 20px;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 2px solid #ffd700;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background: #ffd700;
+    color: #2a0a4a;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.login-box button:hover {
+    transform: scale(1.05);
+    background: #ffed4a;
+}
+
+.error-message {
+    color: #ff6b6b;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+/* Status badges */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-pending {
+    background: #ffd700;
+    color: #333;
+}
+
+.status-used {
+    background: #28a745;
+    color: white;
+}
+
+.completed-text {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.action-btn {
+    padding: 5px 10px;
+    background: #ffd700;
+    color: #2a0a4a;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.action-btn:hover {
+    background: #ffed4a;
+}
