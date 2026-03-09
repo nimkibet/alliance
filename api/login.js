@@ -8,11 +8,11 @@ export default function handler(req, res) {
   // Hardcoded admin credentials with department mapping
   // Format: username = "admin@department"
   const ADMIN_CREDENTIALS = {
-    "admin@spas": "Spark2026!",
-    "admin@med": "Spark2026!",
-    "admin@edu": "Spark2026!",
-    "admin@bus": "Spark2026!",
-    "admin@eng": "Spark2026!"
+    "admin@spas": "Admin2026!",
+    "admin@med": "Admin2026!",
+    "admin@edu": "Admin2026!",
+    "admin@bus": "Admin2026!",
+    "admin@eng": "Admin2026!"
   };
 
   // Department mapping based on email domain
